@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 import sys
-import argparse
 import hashlib
 import binascii
 
@@ -32,7 +31,7 @@ class BotClient(object):
             # if there is no trigger proceed as everything might be a command
             if bot.config.get('trigger', None) != None:
                 # check trigger
-                if event.arguments[0][0] == bot.config.get['trigger']:
+                if event.arguments[0][0] == bot.config['trigger']:
                     event.arguments[0] = event.arguments[0][1:] # Trim trigger
                 # We are requiring a trigger to use cmds.
                 else:
@@ -112,10 +111,7 @@ def identify_user(bot, event):
         bot.connection.privmsg(event.channel, "You know better than to ident in a public channel dont you?")
         return
     user = event.source
-    # UTF-8 decoding by default python 3.4
-    pass_hash = hashlib.pbkdf2_hmac('sha256', bytearray(event.arguments, 'UTF-8'), b'This is our current salt', 1000)
-    pass_hash = binascii.hexlify(pass_hash).decode()
-    print("Generated password hash '{0}' => '{1}'".format(event.arguments, pass_hash))
+
     admin_passes = bot.config.get('admin_passes', None)
     if admin_passes == None:
         bot.connection.privmsg(user.nick, "No admins defined for this bot")
@@ -126,15 +122,23 @@ def identify_user(bot, event):
         bot.connection.privmsg(user.nick, "Authentication Failed")
         return
 
-    if admin_passes[user] != pass_hash:
-        print("Admin user failed to authenticate: {0} with {1}, expected {2}".format(user, pass_hash, admin_passes[user]))
+    # UTF-8 decoding by default python 3.4
+    pass_hash = hashlib.pbkdf2_hmac('sha256', \
+            bytearray(event.arguments, 'UTF-8'), \
+            binascii.unhexlify(admin_passes[user]['salt']), \
+            1000)
+    pass_hash = binascii.hexlify(pass_hash).decode()
+    # print("Generated password hash '{0}' => '{1}'".format(event.arguments, pass_hash))
+
+    if admin_passes[user]['passwd'] != pass_hash:
+        print("Admin user failed to authenticate: {0} with {1}, expected {2}".format(user, pass_hash, admin_passes[user]['passwd']))
         bot.connection.privmsg(user.nick, "Authentication Failed")
         return
 
-    if admin_passes[user] == pass_hash:
+    if admin_passes[user]['passwd'] == pass_hash:
         #Consider making this not an explicit if, but hey security!
         bot.admins.add(user)
-        print(bot.admins)
+        print("{0} Successfully authenticated".format(user))
         bot.connection.privmsg(user.nick, "Authentication Successful")
 
 def unident_user(bot, event):
