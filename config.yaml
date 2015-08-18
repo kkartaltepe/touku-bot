@@ -1,0 +1,11 @@
+server: irc.rizon.net
+port: 6667
+nick: kubot
+
+channels: ['#touku']
+trigger: '!'
+
+admin_passes:
+    'kurufu!~kurufu@1.800.no.anime': '26546b8e83796c9203d7aa922e5847d67a56b83b47263661ca26ff057b1821d7' #left
+    'Shroo!~quassel@EAD5E58.C3560563.63D22CDF.IP': '51ca2f8452740c2dfcb6dcffc084cb3f9a3638ec94fcc8e8357c79abd37e47f1' #nicoashit
+
