@@ -72,7 +72,10 @@ def np_cmd(bot, event):
         bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
         return
     json = r.json()
-    bot.connection.privmsg(event.channel, "Now playing {} - {}".format(json['artist'], json['title']))
+    output = "\x02Now playing\x02: {} - {}".format(json['artist'], json['title'])
+    if(json.get('comment') != None):
+        output += " ({})".format(json['comment'])
+    bot.connection.privmsg(event.channel, output)
 
 if __name__ == '__main__':
     bot = client.BotClient()
@@ -86,6 +89,7 @@ if __name__ == '__main__':
 
     bot.add_cmd_handler('np', np_cmd)
     bot.add_cmd_handler('song', np_cmd)
+    bot.add_cmd_handler('nowplaying', np_cmd)
 
     bot.connect()
 
