@@ -2,6 +2,7 @@
 
 import hashlib
 import binascii
+import re
 
 import client
 import requests
@@ -72,10 +73,36 @@ def np_cmd(bot, event):
         bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
         return
     json = r.json()
-    output = "\x02Now playing\x02: {} - {}".format(json['artist'], json['title'])
+    output = "\x02Now playing\x02: {} - {}".format(json.get('artist'), json.get('title'))
     if(json.get('comment') != None):
         output += " ({})".format(json['comment'])
     bot.connection.privmsg(event.channel, output)
+
+url_regex = re.compile(r'(https?|ftp)://[^\s/$.?#].[^\s]*', re.I)
+title_regex = re.compile(r'<title>(.*?)</title>', re.I | re.U | re.M)
+def url_peek(bot, event):
+    print("Checking for url")
+    matches = url_regex.search(event.arguments[0])
+    print("I think my source is {} and my target is {}".format(event.source, event.target))
+    if(matches != None):
+        print("Trying to query '{}'".format(matches.group(0)))
+        resp = requests.get(matches.group(0))
+        if(resp.status_code != 200):
+            bot.connection.privmsg(event.target, "[URL] Status code {}".format(resp.status_code))
+            return
+        content_type = resp.headers.get('content-type').split(';')[0] # Hack to trim shit out of content-type
+        if(content_type == None or content_type == 'text/html'):
+            title_match = title_regex.search(resp.text)
+            if(title_match != None):
+                bot.connection.privmsg(event.target, "[URL] {}".format(title_match.group(1)[0:50]))
+            else:
+                print("Failed to find a title for {}".format(event.arguments[0]))
+        else:
+            bot.connection.privmsg(event.target, "URL is '{}'".format(content_type))
+    else:
+        print("No url found in '{}'".format(event.arguments[0]))
+
+
 
 if __name__ == '__main__':
     bot = client.BotClient()
@@ -91,5 +118,6 @@ if __name__ == '__main__':
     bot.add_cmd_handler('song', np_cmd)
     bot.add_cmd_handler('nowplaying', np_cmd)
 
+    bot.add_irc_handler('pubmsg', url_peek)
     bot.connect()
 
