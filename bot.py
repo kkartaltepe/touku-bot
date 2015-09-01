@@ -68,7 +68,7 @@ def echo_cmd(bot, event):
     bot.connection.privmsg(event.channel, event.arguments)
 
 def np_cmd(bot, event):
-    r = requests.get('http://dj.toukufm.com:9090/getmeta')	
+    r = requests.get('http://dj.toukufm.com:9090/getmeta')      
     if(r.status_code != 200):
         bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
         return
@@ -98,7 +98,7 @@ def url_peek(bot, event):
             else:
                 print("Failed to find a title for {}".format(event.arguments[0]))
         else:
-	    bot.connection.privmsg(event.target, "[{}] {} bytes".format(content_type, resp.headers.get('content-length'))
+            bot.connection.privmsg(event.target, "[{}] {} bytes".format(content_type,resp.headers.get('content-length')))
     else:
         print("No url found in '{}'".format(event.arguments[0]))
 
