@@ -94,11 +94,11 @@ def url_peek(bot, event):
         if(content_type == None or content_type == 'text/html'):
             title_match = title_regex.search(resp.text)
             if(title_match != None):
-                bot.connection.privmsg(event.target, "[URL] {}".format(title_match.group(1)[0:50]))
+                bot.connection.privmsg(event.target, "[URL] {}".format(title_match.group(1)[0:80]))
             else:
                 print("Failed to find a title for {}".format(event.arguments[0]))
         else:
-            bot.connection.privmsg(event.target, "URL is '{}'".format(content_type))
+	    bot.connection.privmsg(event.target, "[{}] {} bytes".format(content_type, resp.headers.get('content-length'))
     else:
         print("No url found in '{}'".format(event.arguments[0]))
 
