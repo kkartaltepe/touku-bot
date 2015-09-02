@@ -76,6 +76,8 @@ def np_cmd(bot, event):
     output = "\x02Now playing\x02: {} - {}".format(json.get('artist'), json.get('title'))
     if(json.get('WOAR') != None):
         output += " ({})".format(json['WOAR'])
+    if(json.get('comment') != None and json['comment'] != "N/A" and json['comment'] != "NA"):
+        output += ", source: {})".format(json['comment'])
     bot.connection.privmsg(event.channel, output)
 
 def format_size(size):
@@ -86,8 +88,6 @@ def format_size(size):
         size = size/1024
         prefixes.pop(0)
     return "{0:.1f}".format(size)+prefixes.pop(0)
-
-
 
 url_regex = re.compile(r'(https?|ftp)://[^\s/$.?#].[^\s]*', re.I)
 title_regex = re.compile(r'<title>(.*?)</title>', re.I | re.U | re.M)
