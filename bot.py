@@ -108,7 +108,7 @@ def url_peek(bot, event):
             else:
                 print("Failed to find a title for {}".format(event.arguments[0]))
         else:
-            bot.connection.privmsg(event.target, "[{}] {} bytes".format(content_type,format_size(resp.headers.get('content-length', 0))))
+            bot.connection.privmsg(event.target, "[{}] {}".format(content_type,format_size(resp.headers.get('content-length', 0))))
     else:
         print("No url found in '{}'".format(event.arguments[0]))
 
