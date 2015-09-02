@@ -74,8 +74,8 @@ def np_cmd(bot, event):
         return
     json = r.json()
     output = "\x02Now playing\x02: {} - {}".format(json.get('artist'), json.get('title'))
-    if(json.get('comment') != None):
-        output += " ({})".format(json['comment'])
+    if(json.get('WOAR') != None):
+        output += " ({})".format(json['WOAR'])
     bot.connection.privmsg(event.channel, output)
 
 url_regex = re.compile(r'(https?|ftp)://[^\s/$.?#].[^\s]*', re.I)
