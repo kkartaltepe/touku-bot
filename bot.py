@@ -78,6 +78,16 @@ def np_cmd(bot, event):
         output += " ({})".format(json['WOAR'])
     bot.connection.privmsg(event.channel, output)
 
+def format_size(size):
+    ''' Literally explodes if someone returns content-length > 100TB '''
+    prefixes = ['B', 'KB', 'GB', 'TB']
+    while size > 100:
+        size = size/1024
+        prefixes.pop(0)
+    return str(size)+prefixes.pop(0)
+
+
+
 url_regex = re.compile(r'(https?|ftp)://[^\s/$.?#].[^\s]*', re.I)
 title_regex = re.compile(r'<title>(.*?)</title>', re.I | re.U | re.M)
 def url_peek(bot, event):
@@ -98,7 +108,7 @@ def url_peek(bot, event):
             else:
                 print("Failed to find a title for {}".format(event.arguments[0]))
         else:
-            bot.connection.privmsg(event.target, "[{}] {} bytes".format(content_type,resp.headers.get('content-length')))
+            bot.connection.privmsg(event.target, "[{}] {} bytes".format(content_type,format_size(resp.headers.get('content-length', 0))))
     else:
         print("No url found in '{}'".format(event.arguments[0]))
 
