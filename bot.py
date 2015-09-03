@@ -76,7 +76,7 @@ def np_cmd(bot, event):
     json = r.json()
     output = "\x02Now playing\x02: {} - {}".format(json.get('artist'), json.get('title'))
     if(json.get('WOAR') != None):
-        output += " ({})".format(json['WOAR'])
+        output += " ( {} )".format(json['WOAR'])
     if(json.get('comment') != None and json['comment'] != "N/A" and json['comment'] != "NA"):
         output += " [{}]".format(json['comment'])
     bot.connection.privmsg(event.channel, output)
