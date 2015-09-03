@@ -6,6 +6,7 @@ import re
 
 import client
 import requests
+import irc.client
 
 def join_channels(bot, event):
     for channel in bot.config['channels']:
@@ -77,7 +78,7 @@ def np_cmd(bot, event):
     if(json.get('WOAR') != None):
         output += " ({})".format(json['WOAR'])
     if(json.get('comment') != None and json['comment'] != "N/A" and json['comment'] != "NA"):
-        output += ", source: {})".format(json['comment'])
+        output += " [{}]".format(json['comment'])
     bot.connection.privmsg(event.channel, output)
 
 def format_size(size):
