@@ -9,7 +9,7 @@ admin_passes:
     'kurufu!~kurufu@1.800.no.anime':
         passwd: '66d3f4e76935759ccbb67def92f8a9172964de18db62da8717fd4b4db5f4e70d' #left
         salt: '329de7a9ce9fa5f21dd4efe84834394cdcd37389605687842e5e822282dcb6ee'
-    'Shroo!~quassel@EAD5E58.C3560563.63D22CDF.IP':
+    'Shroo!~quassel@Nico.Nico.Nii':
         passwd: '2bfef48b9cf44b43473c65e5891f46fda3ac30b03b9ccd19e2001209ae74c13e'
         salt: 'de041038aa88cee4136682f64349e8713267f13bec13c0eb45daf7f8f1ee463b' #nicoashit
 
