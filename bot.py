@@ -114,6 +114,8 @@ def url_peek(bot, event):
     else:
         print("No url found in '{}'".format(event.arguments[0]))
 
+def get_playlist(bot, event):
+	bot.connection.privmsg(event.channel, "Get the playlist at http://dj.toukufm.com:8000/touku.ogg.m3u")
 
 
 if __name__ == '__main__':
@@ -129,6 +131,10 @@ if __name__ == '__main__':
     bot.add_cmd_handler('np', np_cmd)
     bot.add_cmd_handler('song', np_cmd)
     bot.add_cmd_handler('nowplaying', np_cmd)
+
+    bot.add_cmd_handler('playlist', get_playlist)
+
+    bot.add_cmd_handler('anime', lambda bot,event: bot.connection.privmsg(event.channel, "remember to say anime of your having a good time!"))
 
     bot.add_irc_handler('pubmsg', url_peek)
     bot.connect()
