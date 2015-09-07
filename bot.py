@@ -69,7 +69,7 @@ def echo_cmd(bot, event):
     bot.connection.privmsg(event.channel, event.arguments)
 
 def np_cmd(bot, event):
-    r = requests.get('http://dj.toukufm.com:9090/getmeta')      
+    r = requests.get('http://dj.toukufm.com:9090/getmeta')
     if(r.status_code != 200):
         bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
         return
@@ -117,6 +117,13 @@ def url_peek(bot, event):
 def get_playlist(bot, event):
 	bot.connection.privmsg(event.channel, "Get the playlist at http://dj.toukufm.com:8000/touku.ogg.m3u")
 
+def dump_meta(bot, event):
+    r = requests.get('http://dj.toukufm.com:9090/getmeta')
+    if(r.status_code != 200):
+        bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
+        return
+    json = r.json()
+    bot.connection.privmsg(event.source.nick, json)
 
 if __name__ == '__main__':
     bot = client.BotClient()
@@ -134,7 +141,9 @@ if __name__ == '__main__':
 
     bot.add_cmd_handler('playlist', get_playlist)
 
-    bot.add_cmd_handler('anime', lambda bot,event: bot.connection.privmsg(event.channel, "remember to say anime of your having a good time!"))
+    bot.add_cmd_handler('anime', lambda bot,event: bot.connection.privmsg(event.channel, "remember to say anime if your having a good time!"))
+
+    bot.add_cmd_handler('allmeta', dump_meta)
 
     bot.add_irc_handler('pubmsg', url_peek)
     bot.connect()
