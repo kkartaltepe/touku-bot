@@ -3,6 +3,8 @@
 import hashlib
 import binascii
 import re
+import pprint
+pretty = pprint.PrettyPrinter(indent=2)
 
 import client
 import requests
@@ -123,7 +125,9 @@ def dump_meta(bot, event):
         bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
         return
     json = r.json()
-    bot.connection.privmsg(event.source.nick, json)
+    pretty_json = pretty.pformat(json)
+    for line in pretty_json.split('\n'):
+        bot.connection.privmsg(event.source.nick, line)
 
 if __name__ == '__main__':
     bot = client.BotClient()
