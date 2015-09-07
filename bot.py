@@ -95,9 +95,8 @@ def format_size(size):
 url_regex = re.compile(r'(https?|ftp)://[^\s/$.?#].[^\s]*', re.I)
 title_regex = re.compile(r'<title>(.*?)</title>', re.I | re.U | re.M)
 def url_peek(bot, event):
-    print("Checking for url")
     matches = url_regex.search(event.arguments[0])
-    print("I think my source is {} and my target is {}".format(event.source, event.target))
+    #print("I think my source is {} and my target is {}".format(event.source, event.target))
     if(matches != None):
         print("Trying to query '{}'".format(matches.group(0)))
         resp = requests.get(matches.group(0))
@@ -114,7 +113,7 @@ def url_peek(bot, event):
         else:
             bot.connection.privmsg(event.target, "[{}] {}".format(content_type,format_size(resp.headers.get('content-length', 0))))
     else:
-        print("No url found in '{}'".format(event.arguments[0]))
+        #print("No url found in '{}'".format(event.arguments[0]))
 
 def get_playlist(bot, event):
 	bot.connection.privmsg(event.channel, "Get the playlist at http://dj.toukufm.com:8000/touku.ogg.m3u")
