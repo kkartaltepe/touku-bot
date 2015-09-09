@@ -5,6 +5,7 @@ import binascii
 import re
 import pprint
 pretty = pprint.PrettyPrinter(indent=2)
+import html
 
 import client
 import requests
@@ -107,7 +108,8 @@ def url_peek(bot, event):
         if(content_type == None or content_type == 'text/html'):
             title_match = title_regex.search(resp.text)
             if(title_match != None):
-                bot.connection.privmsg(event.target, "[URL] {}".format(title_match.group(1)[0:80]))
+                title = html.decode(title_match.group(1)[0:80]);
+                bot.connection.privmsg(event.target, "[URL] {}".format(title))
             else:
                 print("Failed to find a title for {}".format(event.arguments[0]))
         else:
