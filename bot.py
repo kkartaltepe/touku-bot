@@ -130,6 +130,17 @@ def dump_meta(bot, event):
     for line in pretty_json.split('\n'):
         bot.connection.privmsg(event.source.nick, line)
 
+def report_song(bot, event):
+    r = requests.get('http://dj.toukufm.com:9090/getmeta')
+    if(r.status_code != 200):
+        bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
+        return
+    json = r.json()
+    admins = ['kurufu','shroo']
+    for admin in admins:
+        bot.connection.privmsg(admin, "Someone reported [{}] for '{}'".format(json['track'], event.arguments[0]))
+
+
 if __name__ == '__main__':
     bot = client.BotClient()
     bot.admins = set()
@@ -149,6 +160,8 @@ if __name__ == '__main__':
     bot.add_cmd_handler('anime', lambda bot,event: bot.connection.privmsg(event.channel, "remember to say anime if your having a good time!"))
 
     bot.add_cmd_handler('allmeta', dump_meta)
+
+    bot.add_cmd_handler('report', report_song)
 
     bot.add_irc_handler('pubmsg', url_peek)
     bot.connect()
