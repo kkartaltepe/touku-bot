@@ -138,7 +138,7 @@ def report_song(bot, event):
     json = r.json()
     admins = ['kurufu','shroo']
     for admin in admins:
-        bot.connection.privmsg(admin, "Someone reported [{}] for '{}'".format(json['track'], event.arguments[0]))
+        bot.connection.privmsg(admin, "Someone reported [{}] for '{}'".format(json['track'], event.arguments))
 
 
 if __name__ == '__main__':
