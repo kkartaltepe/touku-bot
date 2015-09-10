@@ -10,6 +10,7 @@ import html
 import client
 import requests
 import irc.client
+from lxml import etree
 
 def join_channels(bot, event):
     for channel in bot.config['channels']:
@@ -94,10 +95,8 @@ def format_size(size):
     return "{0:.1f}".format(size)+prefixes.pop(0)
 
 url_regex = re.compile(r'(https?|ftp)://[^\s/$.?#].[^\s]*', re.I)
-title_regex = re.compile(r'<title>(.*?)</title>', re.I | re.U | re.M)
 def url_peek(bot, event):
     matches = url_regex.search(event.arguments[0])
-    #print("I think my source is {} and my target is {}".format(event.source, event.target))
     if(matches != None):
         print("Trying to query '{}'".format(matches.group(0)))
         resp = requests.get(matches.group(0))
@@ -106,9 +105,11 @@ def url_peek(bot, event):
             return
         content_type = resp.headers.get('content-type').split(';')[0] # Hack to trim shit out of content-type
         if(content_type == None or content_type == 'text/html'):
-            title_match = title_regex.search(resp.text)
-            if(title_match != None):
-                title = html.unescape(title_match.group(1)[0:80]);
+            html_tree = etree.HTML(resp.text)
+            title_match = html_tree.xpath("//title")
+            if(len(title_match) > 0):
+                title = html.unescape(title_match[0].text[0:80]);
+                title = re.sub(r'\n', '', title) # Remove newlines before sending messages
                 bot.connection.privmsg(event.target, "[URL] {}".format(title))
             else:
                 print("Failed to find a title for {}".format(event.arguments[0]))
@@ -138,7 +139,7 @@ def report_song(bot, event):
     json = r.json()
     admins = ['kurufu','shroo']
     for admin in admins:
-        bot.connection.privmsg(admin, "Someone reported [{}] for '{}'".format(json.get('track', "A DJ probably"), event.arguments))
+        bot.connection.privmsg(admin, "{} reported [{}] for '{}'".format(event.source, json.get('track', "A DJ probably"), event.arguments))
 
 
 if __name__ == '__main__':
