@@ -2,6 +2,7 @@
 
 import hashlib
 import binascii
+import functools
 import re
 import pprint
 pretty = pprint.PrettyPrinter(indent=2)
@@ -73,16 +74,28 @@ def echo_cmd(bot, event):
     bot.connection.privmsg(event.channel, event.arguments)
 
 def np_cmd(bot, event):
+    # Fetch metadata
     r = requests.get('http://dj.toukufm.com:9090/getmeta')
     if(r.status_code != 200):
         bot.connection.privmsg(event.channel, "Failed to read now playing data :(")
         return
     json = r.json()
+
+    # Fetch listener stats
+    r = requests.get('http://dj.toukufm.com:8000/status-json.xsl')
+    listeners = None
+    if(r.status_code != 200):
+        bot.connection.privmsg(event.channel, "Failed to read listener data :(")
+    else:
+        listeners = functools.reduce(lambda a,d: a+d['listeners'], r.json()['icestats']['source'], 0)
+
     output = "\x02Now playing\x02: {} - {}".format(json.get('artist'), json.get('title'))
     if(json.get('WOAR') != None):
         output += " ( {} )".format(json['WOAR'])
     if(json.get('comment') != None and json['comment'] != "N/A" and json['comment'] != "NA"):
         output += " [{}]".format(json['comment'])
+    if(listeners != None):
+        output += " with {} listeners.".format(listeners)
     bot.connection.privmsg(event.channel, output)
 
 def format_size(size):
