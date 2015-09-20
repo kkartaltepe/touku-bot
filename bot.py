@@ -113,6 +113,7 @@ def url_peek(bot, event):
     if(matches != None):
         print("Trying to query '{}'".format(matches.group(0)))
         resp = requests.get(matches.group(0))
+	resp.encoding = 'UTF-8'
         if(resp.status_code != 200):
             bot.connection.privmsg(event.target, "[URL] Status code {}".format(resp.status_code))
             return
