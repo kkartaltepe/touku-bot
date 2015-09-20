@@ -2,6 +2,7 @@ import os
 
 import irc.client
 import yaml
+from threading import Thread
 
 class BotClient(object):
 
@@ -21,7 +22,8 @@ class BotClient(object):
     def _dispatch_irc_event(self, connection, event):
         if self.irc_handlers.get(event.type, None) != None:
             for handler in self.irc_handlers[event.type]:
-                handler(self, event)
+                Thread(target=handler,args=(self,event)).start()
+                #handler(self, event)
 
     def _dispatch_cmd_event(self, connection, event):
         # dont allow(fix) triggers for privmsg
@@ -36,7 +38,7 @@ class BotClient(object):
                     return
         event = self._parse_irc_event(event)
         if self.cmd_handlers.get(event.type, None):
-            self.cmd_handlers[event.type](self, event)
+            Thread(target=self.cmd_handlers[event.type], args=(self, event)).start()
 
     def _parse_irc_event(self, event):
         split = event.arguments[0].split(' ', 1)
