@@ -113,7 +113,7 @@ def url_peek(bot, event):
     if(matches != None):
         print("Trying to query '{}'".format(matches.group(0)))
         resp = requests.get(matches.group(0))
-	resp.encoding = 'UTF-8'
+        resp.encoding = 'UTF-8'
         if(resp.status_code != 200):
             bot.connection.privmsg(event.target, "[URL] Status code {}".format(resp.status_code))
             return
@@ -133,7 +133,7 @@ def url_peek(bot, event):
         #print("No url found in '{}'".format(event.arguments[0]))
 
 def get_playlist(bot, event):
-	bot.connection.privmsg(event.channel, "Get the playlist at http://dj.toukufm.com:8000/touku.ogg.m3u")
+        bot.connection.privmsg(event.channel, "Get the playlist at http://dj.toukufm.com:8000/touku.ogg.m3u")
 
 def dump_meta(bot, event):
     r = requests.get('http://dj.toukufm.com:9090/getmeta')
