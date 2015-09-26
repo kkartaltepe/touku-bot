@@ -12,6 +12,7 @@ import client
 import requests
 import irc.client
 from lxml import etree
+import arrow
 
 def join_channels(bot, event):
     for channel in bot.config['channels']:
@@ -98,6 +99,20 @@ def np_cmd(bot, event):
         output += " with {} listeners.".format(listeners)
     bot.connection.privmsg(event.channel, output)
 
+def next_show(bot, event):
+    r = requests.get('http://toukufm.com/data/schedule')
+    if(r.status_code != 200):
+        bot.connection.privmsg(event.channel, "Failed to read schedule data :(")
+        return
+    json = r.json()['result'][0]
+    show_time = arrow.get(json['start_unix'])
+    now = arrow.now()
+    if show_time < now:
+        bot.connection.privmsg(event.channel, "Current show: {} by {} started {}".format(json['name'], json['host'], show_time.humanize(now)))
+    else:
+        bot.connection.privmsg(event.channel, "Next show: {} by {} in {}".format(json['name'], json['host'], show_time.humanize(now)))
+
+
 def format_size(size):
     ''' Literally explodes if someone returns content-length > 100TB '''
     prefixes = ['B', 'KB', 'MB', 'GB', 'TB']
@@ -169,6 +184,9 @@ if __name__ == '__main__':
     bot.add_cmd_handler('np', np_cmd)
     bot.add_cmd_handler('song', np_cmd)
     bot.add_cmd_handler('nowplaying', np_cmd)
+
+    bot.add_cmd_handler('ns', next_show)
+    bot.add_cmd_handler('nextshow', next_show)
 
     bot.add_cmd_handler('playlist', get_playlist)
 
