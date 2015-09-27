@@ -104,7 +104,12 @@ def next_show(bot, event):
     if(r.status_code != 200):
         bot.connection.privmsg(event.channel, "Failed to read schedule data :(")
         return
-    json = r.json()['result'][0]
+    json = r.json()['result']
+    if(len(json) < 1):
+        bot.connection.privmsg(event.channel, "No shows comming up soon. Check the schedule at http://toukufm.com/schedule for future shows")
+        return
+
+    json = json[0]
     show_time = arrow.get(json['start_unix'])
     now = arrow.now()
     if show_time < now:
